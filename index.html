@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cazrath</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@1&display=swap");
+  body {
+    background-color: white;
+    color: black;
+    font-family: 'Times New Roman', serif;
+    margin: 0;
+    padding: 0;
+  }
+  .title {
+    font-size: 4em;
+    text-align: center;
+    margin-top: 50px;
+  }
+  .quote {
+    font-size: 1.2em;
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .info {
+    font-size: 1em;
+    line-height: 1.8em;
+    position: absolute;
+    top: 250px;
+    left: 20px;
+  }
+  /* Logo: white bg, black text by default; black bg, white text on hover */
+  .logo {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .logo:hover {
+    background-color: black;
+    color: white;
+  }
+
+  /* Login popup styles */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  .popup {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    width: 300px;
+    position: relative;
+    font-family: 'Times New Roman', serif;
+    color: black;
+  }
+  .popup h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: normal;
+    font-size: 1.5em;
+    text-align: center;
+  }
+  .popup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  .popup input {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    font-family: 'Times New Roman', serif;
+    box-sizing: border-box;
+  }
+  .popup button {
+    width: 100%;
+    padding: 10px 0;
+    background-color: black;
+    color: white;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-family: 'Times New Roman', serif;
+  }
+  .popup button:hover {
+    background-color: #333;
+  }
+  .popup .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5em;
+    color: #999;
+    cursor: pointer;
+    user-select: none;
+  }
+  .popup .close-btn:hover {
+    color: #555;
+  }
+
+  /* Dropdown menu styles (compact + centered) */
+  .menu-dropdown {
+    position: fixed;
+    top: 55px; /* below the logo */
+    right: 20px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 150px;
+    font-family: 'Times New Roman', serif;
+    z-index: 1500;
+    display: none; /* hidden by default */
+    text-align: center;
+  }
+  .menu-dropdown ul {
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+  }
+  .menu-dropdown li {
+    padding: 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+    color: black;
+    border-radius: 4px;
+  }
+  .menu-dropdown li:hover {
+    background-color: black;
+    color: white;
+  }
+  .info-line {
+    display: inline-block;
+    position: relative;
+    cursor: default;
+  }
+  .info-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: black;
+    transition: width 0.35s ease;
+  }
+  .info-line:hover::after {
+    width: 100%;
+  }
+  .divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    margin: 10px 20px 0;
+    cursor: default;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: black;
+    transition: transform 0.45s ease, opacity 0.45s ease;
+  }
+  .divider:hover::before {
+    transform: translateX(-16px);
+    opacity: 0.3;
+  }
+  .divider:hover::after {
+    transform: translateX(16px);
+    opacity: 0.3;
+  }
+  .divider span {
+    padding: 0 12px;
+    font-size: 0.9em;
+    display: inline-block;
+    transition: transform 0.45s ease, letter-spacing 0.45s ease;
+  }
+  .divider:hover span {
+    transform: scale(1.5);
+    letter-spacing: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo" id="logo">ℭ</div>
+
+<div class="title">ℭ𝔞𝔷𝔯𝔞𝔱𝔥</div>
+
+<div class="quote">
+  Even if the sky falls, the soul it feared most — <strong>Cazrath</strong> — will still be standing where gravity ends.
+</div>
+
+<div class="info">
+  <span class="info-line">✦ Vein.Name : Nu'man Anis Ahmed Ansari</span><br>
+  <span class="info-line">✦ Age.Sigil : XXII.𝘴𝘵𝘪𝘭𝘭.𝘸𝘢𝘭𝘬𝘪𝘯𝘨</span><br>
+  <span class="info-line">✦ Depth.Scan : survived.unseen</span><br>
+  <span class="info-line">✦ Bound.To : what's left</span><br>
+  <span class="info-line">✦ Drift.ID : 0xCZRTH</span>
+</div>
+<div class="divider"><span>✦</span></div>
+
+<!-- Login popup -->
+<div class="popup-overlay" id="loginPopup">
+  <div class="popup">
+    <div class="close-btn" id="closeLoginPopup">&times;</div>
+    <h2>Login</h2>
+    <label for="voidSigil">Void Sigil</label>
+    <input type="text" id="voidSigil" placeholder="Username" autocomplete="off" />
+    <label for="voidLock">Void Lock</label>
+    <input type="password" id="voidLock" placeholder="Password" autocomplete="off" />
+    <button id="loginBtn">Unlock the Void</button>
+  </div>
+</div>
+
+<!-- Dropdown menu -->
+<div class="menu-dropdown" id="menuDropdown">
+  <ul>
+    <li id="menuDashboard">𝔇𝔞𝔰𝔥𝔟𝔬𝔞𝔯𝔡</li>
+    <li id="menuCustomize">ℭ𝔲𝔰𝔱𝔬𝔪𝔦𝔷𝔢</li>
+    <li id="menuFrames">𝔗𝔥𝔢 𝔉𝔯𝔞𝔪𝔢𝔰 ℑ 𝔎𝔢𝔭𝔱</li>
+    <li id="menuMalzreth">𝔐𝔞𝔩𝔷𝔯𝔢𝔱𝔥 ℜ𝔢𝔞𝔩𝔪</li>
+    <li id="menuSettings">𝔖𝔢𝔱𝔱𝔦𝔫𝔤𝔰</li>
+    <li id="menuLogout">𝔏𝔬𝔤𝔬𝔲𝔱</li>
+  </ul>
+</div>
+
+<script>
+  const logo = document.getElementById('logo');
+  const loginPopup = document.getElementById('loginPopup');
+  const menuDropdown = document.getElementById('menuDropdown');
+  const closeLoginPopup = document.getElementById('closeLoginPopup');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('menuLogout');
+
+  function isLoggedIn() {
+    return localStorage.getItem('loggedIn') === 'true';
+  }
+
+  function showLogin() {
+    loginPopup.style.display = 'flex';
+    menuDropdown.style.display = 'none';
+    document.getElementById('voidSigil').value = '';
+    document.getElementById('voidLock').value = '';
+  }
+
+  function toggleMenu() {
+    if(menuDropdown.style.display === 'block') {
+      menuDropdown.style.display = 'none';
+    } else {
+      menuDropdown.style.display = 'block';
+      loginPopup.style.display = 'none';
+    }
+  }
+
+  logo.addEventListener('click', () => {
+    if (isLoggedIn()) {
+      toggleMenu();
+    } else {
+      showLogin();
+    }
+  });
+
+  closeLoginPopup.addEventListener('click', () => { loginPopup.style.display = 'none'; });
+  loginPopup.addEventListener('click', e => { if (e.target === loginPopup) loginPopup.style.display = 'none'; });
+  document.addEventListener('click', e => { if (!menuDropdown.contains(e.target) && e.target !== logo) menuDropdown.style.display = 'none'; });
+
+  loginBtn.addEventListener('click', () => {
+    const username = document.getElementById('voidSigil').value.trim();
+    const password = document.getElementById('voidLock').value.trim();
+    if(username && password) {
+      localStorage.setItem('loggedIn', 'true');
+      loginPopup.style.display = 'none';
+      alert('Unlocked! Welcome.');
+    } else {
+      alert('Please enter Void Sigil and Void Lock.');
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('loggedIn');
+    menuDropdown.style.display = 'none';
+    alert('Logged out.');
+  });
+
+  // Menu clicks
+  document.getElementById('menuDashboard').addEventListener('click', () => {
+    window.location.href = 'dashboard.html'; // opens the dashboard
+  });
+  document.getElementById('menuCustomize').addEventListener('click', () => { alert('Customize clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuFrames').addEventListener('click', () => { alert('The Frames I Kept clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuMalzreth').addEventListener('click', () => { alert('Malzreth Realm clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuSettings').addEventListener('click', () => { alert('Settings clicked!'); menuDropdown.style.display='none'; });
+</script>
+
+</body>
+</html>
