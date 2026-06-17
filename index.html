@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cazrath</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@1&display=swap");
+  body {
+    background-color: white;
+    color: black;
+    font-family: 'Times New Roman', serif;
+    margin: 0;
+    padding: 0;
+  }
+  .title {
+    font-size: 4em;
+    text-align: center;
+    margin-top: 50px;
+  }
+  .quote {
+    font-size: 1.2em;
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    white-space: nowrap;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .info {
+    font-size: 1em;
+    line-height: 1.8em;
+    margin-top: 220px;
+    padding-left: 20px;
+  }
+  /* Logo: white bg, black text by default; black bg, white text on hover */
+  .logo {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .logo:hover {
+    background-color: black;
+    color: white;
+  }
+
+  /* Login popup styles */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  .popup {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    width: 300px;
+    position: relative;
+    font-family: 'Times New Roman', serif;
+    color: black;
+  }
+  .popup h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: normal;
+    font-size: 1.5em;
+    text-align: center;
+  }
+  .popup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  .popup input {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    font-family: 'Times New Roman', serif;
+    box-sizing: border-box;
+  }
+  .popup button {
+    width: 100%;
+    padding: 10px 0;
+    background-color: black;
+    color: white;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-family: 'Times New Roman', serif;
+  }
+  .popup button:hover {
+    background-color: #333;
+  }
+  .popup .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5em;
+    color: #999;
+    cursor: pointer;
+    user-select: none;
+  }
+  .popup .close-btn:hover {
+    color: #555;
+  }
+
+  /* Dropdown menu styles (compact + centered) */
+  .menu-dropdown {
+    position: fixed;
+    top: 55px; /* below the logo */
+    right: 20px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 150px;
+    font-family: 'Times New Roman', serif;
+    z-index: 1500;
+    display: none; /* hidden by default */
+    text-align: center;
+  }
+  .menu-dropdown ul {
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+  }
+  .menu-dropdown li {
+    padding: 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+    color: black;
+    border-radius: 4px;
+  }
+  .menu-dropdown li:hover {
+    background-color: black;
+    color: white;
+  }
+  .info-line {
+    display: inline-block;
+    position: relative;
+    cursor: default;
+  }
+  .info-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: black;
+    transition: width 0.35s ease;
+  }
+  .info-line:hover::after {
+    width: 100%;
+  }
+  .divider {
+    position: relative;
+    margin: 10px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    cursor: default;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: black;
+    transition: transform 0.45s ease, opacity 0.45s ease;
+  }
+  .divider:hover::before {
+    transform: translateX(-16px);
+    opacity: 0.3;
+  }
+  .divider:hover::after {
+    transform: translateX(16px);
+    opacity: 0.3;
+  }
+  .divider span {
+    padding: 0 12px;
+    font-size: 0.9em;
+    display: inline-block;
+    transition: transform 0.45s ease, letter-spacing 0.45s ease;
+  }
+  .divider:hover span {
+    transform: scale(1.5);
+    letter-spacing: 4px;
+  }
+
+  /* Second divider (below split section) */
+  .divider2 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    margin: 50px 20px 40px;
+    cursor: default;
+  }
+  .divider2::before, .divider2::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: black;
+    transition: height 0.3s ease, opacity 0.3s ease;
+  }
+  .divider2:hover::before, .divider2:hover::after {
+    height: 2.5px;
+    opacity: 0.6;
+  }
+  .divider2 span {
+    padding: 0 12px;
+    font-size: 0.9em;
+    display: inline-block;
+    transition: transform 0.5s ease;
+  }
+  .divider2:hover span {
+    transform: rotate(180deg) scale(1.3);
+  }
+
+  /* Two-column split section */
+  .split-section {
+    display: flex;
+    width: 100%;
+    margin-top: 50px;
+    padding: 0 20px;
+    gap: 20px;
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+  .split-left {
+    flex: 0 0 50%;
+    max-width: 50%;
+    min-height: 340px;
+    box-sizing: border-box;
+  }
+  .split-right {
+    flex: 0 0 50%;
+    max-width: 50%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Carousel (right column) */
+  .c-track-wrap {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+  }
+  .c-track {
+    display: flex;
+    align-items: center;
+    will-change: transform;
+    transition: transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .c-slide {
+    flex-shrink: 0;
+    width: calc(100% - 20px);
+    height: 340px;
+    margin: 0 10px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #111;
+    transition: transform 0.45s ease, opacity 0.45s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  .c-slide.active { transform: scale(1); opacity: 1; }
+  .c-slide:not(.active) { transform: scale(0.92); opacity: 0.35; }
+  .c-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .c-slide-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3em;
+    color: #ccc;
+  }
+  .c-slide-name {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1em;
+    letter-spacing: 0.12em;
+    color: #111;
+    margin-top: 14px;
+    height: 24px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .c-slide-name.visible { opacity: 1; }
+  .c-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 16px;
+  }
+  .c-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #111;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s, color 0.2s;
+    user-select: none;
+  }
+  .c-btn:hover { background: #111; color: #fff; }
+  .c-counter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85em;
+    letter-spacing: 0.15em;
+    color: #888;
+    min-width: 60px;
+    text-align: center;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="logo" id="logo">ℭ</div>
+
+<div class="title">ℭ𝔞𝔷𝔯𝔞𝔱𝔥</div>
+
+<div class="quote">
+  Even if the sky falls, the soul it feared most — <strong>Cazrath</strong> — will still be standing where gravity ends.
+</div>
+
+<div class="info">
+  <span class="info-line">✦ Vein.Name : Nu'man Anis Ahmed Ansari</span><br>
+  <span class="info-line">✦ Age.Sigil : XXII.𝘴𝘵𝘪𝘭𝘭.𝘸𝘢𝘭𝘬𝘪𝘯𝘨</span><br>
+  <span class="info-line">✦ Depth.Scan : survived.unseen</span><br>
+  <span class="info-line">✦ Bound.To : what's left</span><br>
+  <span class="info-line">✦ Drift.ID : 0xCZRTH</span>
+</div>
+<div class="divider"><span>✦</span></div>
+
+</div>
+
+<!-- Two column section: left detail + right carousel -->
+<div class="split-section">
+  <div class="split-left" id="splitLeft">
+    <!-- details to be added later -->
+  </div>
+  <div class="split-right">
+    <div class="c-track-wrap">
+      <div class="c-track" id="cTrack"></div>
+    </div>
+    <div id="cSlideName" class="c-slide-name"></div>
+    <div class="c-controls">
+      <div class="c-btn" id="cPrev">←</div>
+      <div class="c-counter" id="cCounter">01 / 05</div>
+      <div class="c-btn" id="cNext">→</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider2"><span>★</span></div>
+
+
+<!-- Login popup -->
+<div class="popup-overlay" id="loginPopup">
+  <div class="popup">
+    <div class="close-btn" id="closeLoginPopup">&times;</div>
+    <h2>Login</h2>
+    <label for="voidSigil">Void Sigil</label>
+    <input type="text" id="voidSigil" placeholder="Username" autocomplete="off" />
+    <label for="voidLock">Void Lock</label>
+    <input type="password" id="voidLock" placeholder="Password" autocomplete="off" />
+    <button id="loginBtn">Unlock the Void</button>
+  </div>
+</div>
+
+<!-- Dropdown menu -->
+<div class="menu-dropdown" id="menuDropdown">
+  <ul>
+    <li id="menuDashboard">𝔇𝔞𝔰𝔥𝔟𝔬𝔞𝔯𝔡</li>
+    <li id="menuCustomize">ℭ𝔲𝔰𝔱𝔬𝔪𝔦𝔷𝔢</li>
+    <li id="menuFrames">𝔗𝔥𝔢 𝔉𝔯𝔞𝔪𝔢𝔰 ℑ 𝔎𝔢𝔭𝔱</li>
+    <li id="menuMalzreth">𝔐𝔞𝔩𝔷𝔯𝔢𝔱𝔥 ℜ𝔢𝔞𝔩𝔪</li>
+    <li id="menuSettings">𝔖𝔢𝔱𝔱𝔦𝔫𝔤𝔰</li>
+    <li id="menuLogout">𝔏𝔬𝔤𝔬𝔲𝔱</li>
+  </ul>
+</div>
+
+<script>
+  const logo = document.getElementById('logo');
+  const loginPopup = document.getElementById('loginPopup');
+  const menuDropdown = document.getElementById('menuDropdown');
+  const closeLoginPopup = document.getElementById('closeLoginPopup');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('menuLogout');
+
+  function isLoggedIn() {
+    return localStorage.getItem('loggedIn') === 'true';
+  }
+
+  function showLogin() {
+    loginPopup.style.display = 'flex';
+    menuDropdown.style.display = 'none';
+    document.getElementById('voidSigil').value = '';
+    document.getElementById('voidLock').value = '';
+  }
+
+  function toggleMenu() {
+    if(menuDropdown.style.display === 'block') {
+      menuDropdown.style.display = 'none';
+    } else {
+      menuDropdown.style.display = 'block';
+      loginPopup.style.display = 'none';
+    }
+  }
+
+  logo.addEventListener('click', () => {
+    if (isLoggedIn()) {
+      toggleMenu();
+    } else {
+      showLogin();
+    }
+  });
+
+  closeLoginPopup.addEventListener('click', () => { loginPopup.style.display = 'none'; });
+  loginPopup.addEventListener('click', e => { if (e.target === loginPopup) loginPopup.style.display = 'none'; });
+  document.addEventListener('click', e => { if (!menuDropdown.contains(e.target) && e.target !== logo) menuDropdown.style.display = 'none'; });
+
+  loginBtn.addEventListener('click', () => {
+    const username = document.getElementById('voidSigil').value.trim();
+    const password = document.getElementById('voidLock').value.trim();
+    if(username && password) {
+      localStorage.setItem('loggedIn', 'true');
+      loginPopup.style.display = 'none';
+      alert('Unlocked! Welcome.');
+    } else {
+      alert('Please enter Void Sigil and Void Lock.');
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('loggedIn');
+    menuDropdown.style.display = 'none';
+    alert('Logged out.');
+  });
+
+  // Menu clicks
+  document.getElementById('menuDashboard').addEventListener('click', () => {
+    window.location.href = 'dashboard.html'; // opens the dashboard
+  });
+  document.getElementById('menuCustomize').addEventListener('click', () => { alert('Customize clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuFrames').addEventListener('click', () => { alert('The Frames I Kept clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuMalzreth').addEventListener('click', () => { alert('Malzreth Realm clicked!'); menuDropdown.style.display='none'; });
+  document.getElementById('menuSettings').addEventListener('click', () => { alert('Settings clicked!'); menuDropdown.style.display='none'; });
+</script>
+
+
+<script>
+(function(){
+  const frames = [
+    { name: 'The Origin', symbol: 'ℭ' },
+    { name: 'The Veil', symbol: '⊘' },
+    { name: 'The Sigil', symbol: '✦' },
+    { name: 'The Realm', symbol: '⚔' },
+    { name: 'Malzreth', symbol: '𝔐' },
+  ];
+
+  const track = document.getElementById('cTrack');
+  const counter = document.getElementById('cCounter');
+  const slideName = document.getElementById('cSlideName');
+  const total = frames.length;
+  let current = 0;
+
+  const allFrames = [...frames, ...frames, ...frames];
+  allFrames.forEach((f, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'c-slide';
+    slide.innerHTML = `<div class="c-slide-placeholder">${f.symbol}</div>`;
+    track.appendChild(slide);
+  });
+
+  const slides = [...track.querySelectorAll('.c-slide')];
+  let pos = total;
+
+  function getOffset() {
+    const slideW = slides[0].offsetWidth + 40;
+    const wrapW = document.querySelector('.c-track-wrap').offsetWidth;
+    return (wrapW / 2) - (slideW / 2) - pos * slideW;
+  }
+
+  function update(animate) {
+    const slideW = slides[0].offsetWidth + 40;
+    track.style.transition = animate ? 'transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none';
+    track.style.transform = `translateX(${getOffset()}px)`;
+    slides.forEach((el, i) => el.classList.toggle('active', i === pos));
+    const realIdx = ((pos % total) + total) % total;
+    counter.textContent = String(realIdx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    slideName.textContent = frames[realIdx].name;
+    slideName.classList.add('visible');
+  }
+
+  function go(dir) {
+    pos += dir;
+    update(true);
+    setTimeout(() => {
+      if(pos <= 1) { pos += total; update(false); }
+      if(pos >= total*2-2) { pos -= total; update(false); }
+    }, 460);
+  }
+
+  document.getElementById('cPrev').addEventListener('click', () => go(-1));
+  document.getElementById('cNext').addEventListener('click', () => go(1));
+
+  window.addEventListener('resize', () => update(false));
+  setTimeout(() => update(false), 100);
+})();
+</script>
+
+</body>
+</html>
